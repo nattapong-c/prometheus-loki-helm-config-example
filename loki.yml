@@ -1,0 +1,85 @@
+loki:
+  auth_enabled: false
+
+  limits_config:
+    retention_period: 72h
+
+  storage:
+    bucketNames:
+      chunks: chunks
+      ruler: ruler
+      admin: admin
+    type: s3
+    s3:
+      s3: null
+      endpoint: http://minio.monitoring.svc.cluster.local:9000
+      region: null
+      secretAccessKey: xxx
+      accessKeyId: xxx
+      s3ForcePathStyle: true
+      insecure: false
+      http_config: {}
+
+  compactor:
+    retention_enabled: true
+    retention_delete_delay: 2h
+    retention_delete_worker_count: 150
+
+test:
+  enabled: false
+
+monitoring:
+  dashboards:
+    enabled: false
+
+  rules:
+    enabled: false
+    alerting: true
+
+    additionalGroups: []
+    # - name: additional-loki-rules
+    #   rules:
+    #     - record: job:loki_request_duration_seconds_bucket:sum_rate
+    #       expr: sum(rate(loki_request_duration_seconds_bucket[1m])) by (le, job)
+    #     - record: job_route:loki_request_duration_seconds_bucket:sum_rate
+    #       expr: sum(rate(loki_request_duration_seconds_bucket[1m])) by (le, job, route)
+    #     - record: node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate
+    #       expr: sum(rate(container_cpu_usage_seconds_total[1m])) by (node, namespace, pod, container)
+
+  # ServiceMonitor configuration
+  serviceMonitor:
+    # -- If enabled, ServiceMonitor resources for Prometheus Operator are created
+    enabled: false
+
+  # Self monitoring determines whether Loki should scrape it's own logs.
+  # This feature currently relies on the Grafana Agent Operator being installed,
+  # which is installed by default using the grafana-agent-operator sub-chart.
+  # It will create custom resources for GrafanaAgent, LogsInstance, and PodLogs to configure
+  # scrape configs to scrape it's own logs with the labels expected by the included dashboards.
+  selfMonitoring:
+    enabled: false
+
+  lokiCanary:
+    enabled: false
+
+# Configuration for the write
+write:
+  # -- Number of replicas for the write
+  replicas: 2
+  # -- Resource requests and limits for the write
+  # resources:
+  #   limits:
+  #     cpu: 100m
+  #     memory: 512Mi
+
+# Configuration for the read node(s)
+read:
+  # -- Number of replicas for the read
+  replicas: 1
+  # resources:
+    # limits:
+    #   cpu: 100m
+    #   memory: 256Mi
+
+backend:
+  replicas: 1
